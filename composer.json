@@ -26,10 +26,10 @@
         }
     },
     "require": {
-        "illuminate/database": "~5.4.0|~5.5.0|~5.6.0|~5.7.0|~5.8.0",
-        "illuminate/support": "~5.4.0|~5.5.0|~5.6.0|~5.7.0|~5.8.0",
-        "illuminate/routing": "~5.4.0|~5.5.0|~5.6.0|~5.7.0|~5.8.0",
-        "illuminate/validation": "~5.4.0|~5.5.0|~5.6.0|~5.7.0|~5.8.0",
-        "nesbot/carbon": "^1.26.3 || ^2.0"
+        "illuminate/database": "~7.0|8.0|8.x-dev",
+        "illuminate/support": "~7.0|8.0|8.x-dev",
+        "illuminate/routing": "~7.0|8.0|8.x-dev",
+        "illuminate/validation": "~7.0|8.0|8.x-dev",
+        "nesbot/carbon": "^1.26.3 || ^2.0 || ^2.16"
     }
 }
