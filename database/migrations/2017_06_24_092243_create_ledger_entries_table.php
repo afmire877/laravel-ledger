@@ -19,10 +19,8 @@ class CreateLedgerEntriesTable extends Migration
             $table->text('reason');
             $table->boolean('credit')->default(0);
             $table->boolean('debit')->default(0);
-            $table->float('amount', 8, 2);
-            $table->string('amount_currency')->nullable();
-            $table->float('current_balance', 8, 2);
-            $table->string('current_balance_currency')->nullable();
+            $table->integer('amount');
+            $table->integer('current_balance');
             $table->timestamps();
         });
     }

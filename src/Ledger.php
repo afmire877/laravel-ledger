@@ -38,19 +38,16 @@ class Ledger
      * @param $reason
      * @return mixed
      */
-    public function debit($to, $from, $amount, $amount_currency, $reason)
+    public function debit($to, $from, $amount, $reason)
     {
         $balance = $to->balance();
-        $current_balance_currency = isset($to->current_balance_currency) ? $to->current_balance_currency : Null;
         
         $data = [
             'money_from' => $from,
             'debit' => 1, 
             'reason' => $reason, 
             'amount' => $amount, 
-            'amount_currency' => $amount_currency,
-            'current_balance' => (float)$balance + (float)$amount,
-            'current_balance_currency' => $current_balance_currency
+            'current_balance' => $balance + $amount,
         ];
 
         return $this->log($to, $data);
@@ -66,12 +63,11 @@ class Ledger
      * @return mixed
      * @throws InsufficientBalanceException
      */
-    public function credit($from, $to, $amount, $amount_currency="UGX", $reason)
+    public function credit($from, $to, $amount, $reason)
     {
         $balance = $from->balance();
-        $current_balance_currency = isset($from->current_balance_currency) ? $from->current_balance_currency : Null;
 
-        if ((float)$balance == 0 || (float)$amount > (float)$balance )
+        if ($balance == 0 || $amount > $balance )
             throw new InsufficientBalanceException("Insufficient balance");
         
         $data = [
@@ -79,9 +75,7 @@ class Ledger
             'credit' => 1, 
             'reason' => $reason, 
             'amount' => $amount,
-            'amount_currency' => $amount_currency, 
-            'current_balance' => (float)$balance - (float)$amount,
-            'current_balance_currency' => $current_balance_currency
+            'current_balance' => $balance - $amount,
         ];
 
         return $this->log($from, $data);
@@ -124,19 +118,19 @@ class Ledger
      * @throws InvalidRecipientException
      * @throws InsufficientBalanceException
      */
-    public function transfer($from, $to, $amount, $amount_currency="UGX", $reason = "funds transfer")
+    public function transfer($from, $to, $amount, $reason = "funds transfer")
     {
         if (!is_array($to))
             return $this->transferOnce($from, $to, $amount, $reason);
 
-        $total_amount = (float)$amount * count($to);
+        $total_amount = $amount * count($to);
         if ($total_amount > $from->balance())
             throw new InsufficientBalanceException("Insufficient balance");
         
         $recipients = [];
         foreach ($to as $recipient)
         {
-            array_push($recipients, $this->transferOnce($from, $recipient, $amount, $amount_currency, $reason));
+            array_push($recipients, $this->transferOnce($from, $recipient, $amount, $reason));
         }
         
         return $recipients;
@@ -153,13 +147,13 @@ class Ledger
      * @throws InsufficientBalanceException
      * @throws InvalidRecipientException
      */
-    protected function transferOnce($from, $to, $amount, $amount_currency="UGX", $reason)
+    protected function transferOnce($from, $to, $amount, $reason)
     {
         if (get_class($from) == get_class($to) && $from->id == $to->id)
             throw new InvalidRecipientException("Source and recipient cannot be the same object");
 
-        $this->credit($from, $to->name, $amount, $amount_currency ,$reason);
-        return $this->debit($to, $from->name, $amount, $amount_currency, $reason);
+        $this->credit($from, $to->name, $amount ,$reason);
+        return $this->debit($to, $from->name, $amount, $reason);
     }
 
     /**
