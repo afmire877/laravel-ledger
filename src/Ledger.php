@@ -152,6 +152,10 @@ class Ledger
         if (get_class($from) == get_class($to) && $from->id == $to->id)
             throw new InvalidRecipientException("Source and recipient cannot be the same object");
 
+        if (get_class($to) === "App\Escrow" && $from->id == $to->id) {
+            $this->credit($from, "Escrow", $amount, $reason);
+            return $this->debit($to, "Escrow", $amount, $reason);
+        } 
         $this->credit($from, $to->name, $amount ,$reason);
         return $this->debit($to, $from->name, $amount, $reason);
     }
