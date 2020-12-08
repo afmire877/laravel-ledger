@@ -157,9 +157,9 @@ class Ledger
             return $this->debit("Escrow", $from, $amount, $reason);
         }
         if (get_class($from) === "App\Escrow") {
-            $this->credit("Escrow", $to, $amount, $reason);
-            return $this->debit($to, "Escrow", $amount, $reason);
-        } 
+            $this->credit($from, $to->name, $amount, $reason);
+            return $this->debit($to, "Escrow ID: {$from->id}", $amount, $reason);
+        }
         $this->credit($from, $to->name, $amount ,$reason);
         return $this->debit($to, $from->name, $amount, $reason);
     }
