@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: andre
@@ -41,12 +42,12 @@ class Ledger
     public function debit($to, $from, $amount, $reason)
     {
         $balance = $to->balance();
-        
+
         $data = [
             'money_from' => $from,
-            'debit' => 1, 
-            'reason' => $reason, 
-            'amount' => $amount, 
+            'debit' => 1,
+            'reason' => $reason,
+            'amount' => $amount,
             'current_balance' => $balance + $amount,
         ];
 
@@ -65,15 +66,16 @@ class Ledger
      */
     public function credit($from, $to, $amount, $reason)
     {
+
         $balance = $from->balance();
 
-        if ($balance == 0 || $amount > $balance )
+        if ($balance == 0 || $amount > $balance)
             throw new InsufficientBalanceException("Insufficient balance");
-        
+
         $data = [
             'money_to' => $to,
-            'credit' => 1, 
-            'reason' => $reason, 
+            'credit' => 1,
+            'reason' => $reason,
             'amount' => $amount,
             'current_balance' => $balance - $amount,
         ];
@@ -83,7 +85,7 @@ class Ledger
 
     /**
      * persist an entry to the ledger
-     * 
+     *
      * @param $ledgerable
      * @param array $data
      * @return mixed
@@ -109,7 +111,7 @@ class Ledger
 
     /**
      * transfer an amount to each ledgerable instance
-     * 
+     *
      * @param $from
      * @param $to
      * @param $amount
@@ -126,10 +128,9 @@ class Ledger
         $total_amount = $amount * count($to);
         if ($total_amount > $from->balance())
             throw new InsufficientBalanceException("Insufficient balance");
-        
+
         $recipients = [];
-        foreach ($to as $recipient)
-        {
+        foreach ($to as $recipient) {
             array_push($recipients, $this->transferOnce($from, $recipient, $amount, $reason));
         }
         
@@ -154,7 +155,7 @@ class Ledger
 
         if (get_class($to) === "App\Escrow") {
             $this->credit($from, "Escrow", $amount, $reason);
-            return $this->debit("Escrow", $from, $amount, $reason);
+            return $this->debit($to, "Escrow ID: {$from->id}", $amount, $reason);
         }
         if (get_class($from) === "App\Escrow") {
             $this->credit($from, $to->name, $amount, $reason);
@@ -169,7 +170,7 @@ class Ledger
      */
     public function routes()
     {
-        $this->router->group(['namespace' => 'FannyPack\Ledger\Http\Controllers', 'prefix' => 'entries'], function() {
+        $this->router->group(['namespace' => 'FannyPack\Ledger\Http\Controllers', 'prefix' => 'entries'], function () {
             $this->router->get('ledger', 'LedgerController@index');
             $this->router->get('ledger/{entry_id}', 'LedgerController@show');
         });
