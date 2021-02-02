@@ -16,7 +16,7 @@ class CreateLedgerEntriesTable extends Migration
             $table->morphs('ledgerable');
             $table->string('money_to')->nullable();
             $table->string('money_from')->nullable();
-            $table->text('reason');
+            $table->text('reason')->nullable();
             $table->boolean('credit')->default(0);
             $table->boolean('debit')->default(0);
             $table->integer('amount');
